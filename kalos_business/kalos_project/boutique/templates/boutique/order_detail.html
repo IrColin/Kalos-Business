@@ -1,0 +1,67 @@
+{% extends 'boutique/base.html' %}
+{% block title %}Commande {{ order.reference }} — {{ kalos_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="small text-muted mb-3">
+    <a href="{% url 'home' %}" class="text-decoration-none text-muted">Accueil</a> /
+    <a href="{% url 'my_orders' %}" class="text-decoration-none text-muted">Mes commandes</a> / {{ order.reference }}
+  </nav>
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <h1 class="section-title h3 mb-0">Commande {{ order.reference }}</h1>
+    <span class="badge bg-{% if order.status == 'paid' or order.status == 'delivered' %}success{% elif order.status == 'pending' %}warning text-dark{% else %}secondary{% endif %}">{{ order.get_status_display }}</span>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="summary-box p-4">
+        <h5 class="mb-3">Articles</h5>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead><tr><th>Produit</th><th>Prix unitaire</th><th>Quantité</th><th>Total</th></tr></thead>
+            <tbody>
+              {% for item in order.items.all %}
+                <tr>
+                  <td class="small">{{ item.name }}</td>
+                  <td class="small">{{ item.unit_price }} {{ kalos_currency }}</td>
+                  <td class="small">{{ item.quantity }}</td>
+                  <td class="small fw-semibold">{{ item.line_total }} {{ kalos_currency }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between small mb-2"><span>Sous-total</span><span>{{ order.subtotal }} {{ kalos_currency }}</span></div>
+        {% if order.discount > 0 %}
+          <div class="d-flex justify-content-between small mb-2 text-success"><span>Réduction</span><span>-{{ order.discount }} {{ kalos_currency }}</span></div>
+        {% endif %}
+        <div class="d-flex justify-content-between small mb-2"><span>Livraison</span><span>{{ order.shipping }} {{ kalos_currency }}</span></div>
+        <div class="d-flex justify-content-between h5 mt-3"><span>Total</span><span>{{ order.total }} {{ kalos_currency }}</span></div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="summary-box p-4 mb-3">
+        <h6 class="mb-3">Livraison</h6>
+        <p class="small mb-1">{{ order.full_name }}</p>
+        <p class="small text-muted">{{ order.address }}, {{ order.city }} {{ order.postal_code }}, {{ order.country }}</p>
+        <p class="small text-muted mb-1">{{ order.email }}</p>
+        <p class="small text-muted mb-0">{{ order.phone }}</p>
+      </div>
+      <div class="summary-box p-4">
+        <h6 class="mb-3">Paiement</h6>
+        <p class="small mb-1">{{ order.get_payment_method_display|default:"Non renseigné" }}</p>
+        {% if transaction %}
+          <p class="small text-muted mb-1">Réf. {{ transaction.reference }}</p>
+          <p class="small text-muted mb-0">Statut : {{ transaction.get_status_display }}</p>
+          {% if transaction.card_last4 %}<p class="small text-muted mb-0">{{ transaction.card_brand }} •••• {{ transaction.card_last4 }}</p>{% endif %}
+        {% else %}
+          <p class="small text-muted mb-0">En attente de paiement.
+            <a href="{% url 'payment' order.reference %}" class="d-block mt-2">Finaliser le paiement</a>
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

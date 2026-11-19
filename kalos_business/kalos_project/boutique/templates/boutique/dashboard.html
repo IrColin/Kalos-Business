@@ -1,0 +1,170 @@
+{% extends 'boutique/base.html' %}
+{% block title %}Tableau de bord — {{ kalos_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="section-title h3 mb-1"><i class="bi bi-speedometer2 me-2"></i>Tableau de bord</h1>
+      <p class="text-muted small mb-0">Espace réservé à l'équipe — bonjour {{ user.username }}.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/admin/" class="btn btn-outline-kalos"><i class="bi bi-gear me-2"></i>Interface Django</a>
+      <a href="{% url 'home' %}" class="btn btn-kalos"><i class="bi bi-shop me-2"></i>Voir la boutique</a>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="summary-box p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="text-muted small">Chiffre d'affaires</div><div class="h4 mb-0">{{ revenue }} {{ kalos_currency }}</div></div>
+          <i class="bi bi-cash-coin fs-2" style="color:#c8a13a;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="summary-box p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="text-muted small">Commandes</div><div class="h4 mb-0">{{ orders_count }}</div></div>
+          <i class="bi bi-box-seam fs-2" style="color:#c8a13a;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="summary-box p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="text-muted small">En attente</div><div class="h4 mb-0">{{ pending_count }}</div></div>
+          <i class="bi bi-hourglass-split fs-2" style="color:#c8a13a;"></i>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="summary-box p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="text-muted small">Messages ouverts</div><div class="h4 mb-0">{{ unread_messages }}</div></div>
+          <i class="bi bi-envelope-paper fs-2" style="color:#c8a13a;"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="summary-box p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Dernières commandes</h5>
+          <a href="/admin/boutique/order/" class="small text-decoration-none">Toutes les commandes <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle small mb-0">
+            <thead><tr><th>Référence</th><th>Client</th><th>Total</th><th>Statut</th><th></th></tr></thead>
+            <tbody>
+              {% for order in recent_orders %}
+                <tr>
+                  <td class="fw-semibold">{{ order.reference }}</td>
+                  <td>{{ order.full_name }}</td>
+                  <td>{{ order.total }} {{ kalos_currency }}</td>
+                  <td><span class="badge bg-{% if order.status == 'paid' or order.status == 'delivered' %}success{% elif order.status == 'pending' %}warning text-dark{% else %}secondary{% endif %}">{{ order.get_status_display }}</span></td>
+                  <td><a href="/admin/boutique/order/{{ order.pk }}/change/" class="btn btn-sm btn-outline-kalos">Gérer</a></td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="5" class="text-muted">Aucune commande pour le moment.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="summary-box p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Messagerie récente</h5>
+          <a href="/admin/boutique/message/" class="small text-decoration-none">Ouvrir la messagerie <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle small mb-0">
+            <thead><tr><th>Sujet</th><th>De</th><th>Statut</th><th></th></tr></thead>
+            <tbody>
+              {% for message in recent_messages %}
+                <tr>
+                  <td>{{ message.subject }}</td>
+                  <td>{{ message.name }}</td>
+                  <td><span class="badge bg-{% if message.status == 'answered' %}success{% else %}warning text-dark{% endif %}">{{ message.get_status_display }}</span></td>
+                  <td><a href="/admin/boutique/message/{{ message.pk }}/change/" class="btn btn-sm btn-outline-kalos">Répondre</a></td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted">Aucun message.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="summary-box p-4 mb-4">
+        <h5 class="mb-3">Actions rapides</h5>
+        <div class="d-grid gap-2">
+          <a href="/admin/boutique/product/add/" class="btn btn-outline-kalos"><i class="bi bi-plus-circle me-2"></i>Ajouter un produit</a>
+          <a href="/admin/boutique/order/" class="btn btn-outline-kalos"><i class="bi bi-box-seam me-2"></i>Gérer les commandes</a>
+          <a href="/admin/boutique/message/" class="btn btn-outline-kalos"><i class="bi bi-chat-dots me-2"></i>Répondre aux messages</a>
+          <a href="/admin/boutique/transaction/" class="btn btn-outline-kalos"><i class="bi bi-credit-card me-2"></i>Consulter les transactions</a>
+        </div>
+      </div>
+
+      <div class="summary-box p-4">
+        <h6 class="mb-3">Stock à surveiller</h6>
+        <p class="small text-muted">{{ products_count }} produit{{ products_count|pluralize }} au catalogue.</p>
+        {% for product in low_stock %}
+          <div class="d-flex justify-content-between small border-bottom py-2">
+            <span>{{ product.name }}</span>
+            <span class="badge bg-{% if product.stock == 0 %}danger{% else %}warning text-dark{% endif %}">{{ product.stock }}</span>
+          </div>
+        {% empty %}
+          <p class="small text-success mb-0"><i class="bi bi-check-circle me-1"></i>Aucun stock critique.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <section id="parametres" class="mt-5">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <div>
+        <h2 class="section-title h4 mb-1"><i class="bi bi-sliders me-2"></i>Paramètres de l'application</h2>
+        <p class="text-muted small mb-0">Ces réglages sont appliqués immédiatement à toute la boutique.</p>
+      </div>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="row g-4">
+        {% for section in setting_sections %}
+          <div class="col-lg-4">
+            <div class="summary-box p-4 h-100">
+              <h6 class="mb-3"><i class="bi bi-gear-wide-connected me-2" style="color:#a98424;"></i>{{ section.name }}</h6>
+              {% for item in section.fields %}
+                {% if item.type == 'bool' %}
+                  <div class="form-check form-switch mb-3">
+                    {{ item.field }}
+                    <label class="form-check-label small" for="{{ item.field.id_for_label }}">{{ item.label }}</label>
+                    {% if item.help %}<div class="form-text small">{{ item.help }}</div>{% endif %}
+                  </div>
+                {% else %}
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold" for="{{ item.field.id_for_label }}">{{ item.label }}</label>
+                    {{ item.field }}
+                    {% if item.help %}<div class="form-text small">{{ item.help }}</div>{% endif %}
+                    {% for error in item.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-kalos btn-lg"><i class="bi bi-check2-circle me-2"></i>Enregistrer les paramètres</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

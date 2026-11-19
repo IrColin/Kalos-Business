@@ -1,0 +1,44 @@
+{% extends 'boutique/base.html' %}
+{% block title %}Conversation — {{ kalos_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:860px;">
+  <h1 class="section-title h3 mb-4"><i class="bi bi-chat-left-text me-2"></i>Votre conversation</h1>
+
+  <div class="summary-box p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h5 class="mb-1">{{ thread.subject }}</h5>
+        <small class="text-muted">Envoyé le {{ thread.created_at|date:"d/m/Y à H:i" }} par {{ thread.name }}</small>
+      </div>
+      <span class="badge bg-{% if thread.status == 'answered' %}success{% elif thread.status == 'closed' %}secondary{% else %}warning text-dark{% endif %}">{{ thread.get_status_display }}</span>
+    </div>
+    <div class="p-3 bg-light rounded small">{{ thread.body|linebreaks }}</div>
+  </div>
+
+  {% if thread.reply_text %}
+    <div class="summary-box p-4 mb-4 border-start border-4" style="border-color:#c8a13a !important;">
+      <div class="d-flex justify-content-between mb-2">
+        <h6 class="mb-0"><i class="bi bi-reply me-2"></i>Réponse de l'équipe Kalos</h6>
+        <small class="text-muted">{{ thread.replied_at|date:"d/m/Y à H:i" }}</small>
+      </div>
+      <div class="small">{{ thread.reply_text|linebreaks }}</div>
+    </div>
+  {% else %}
+    <div class="alert alert-light border small">Notre équipe n'a pas encore répondu. Merci de votre patience.</div>
+  {% endif %}
+
+  <div class="summary-box p-4">
+    <h6 class="mb-3">Une précision à ajouter ?</h6>
+    <form method="post">
+      {% csrf_token %}
+      <textarea name="body" class="form-control" rows="3" placeholder="Écrivez votre complément d'information..." required></textarea>
+      <button type="submit" class="btn btn-outline-kalos mt-3"><i class="bi bi-send me-2"></i>Envoyer une suite</button>
+    </form>
+    <p class="small text-muted mt-3 mb-0">
+      Conservez ce lien pour suivre la conversation :
+      <code>{{ request.build_absolute_uri }}</code>
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'boutique/base.html' %}
+{% block title %}À propos — {{ kalos_name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:900px;">
+  <h1 class="section-title h3 mb-4">À propos de {{ kalos_name }}</h1>
+  <div class="summary-box p-5">
+    <p class="lead">{{ kalos_tagline }}</p>
+    <p class="text-muted">
+      Kalos Business est une boutique en ligne pensée pour simple et agréable : des produits sélectionnés,
+      une commande claire et un suivi transparent. Notre équipe est à votre écoute via la messagerie intégrée.
+    </p>
+    <div class="row g-4 mt-3">
+      <div class="col-md-4 text-center">
+        <i class="bi bi-gem fs-2" style="color:#c8a13a;"></i>
+        <h6 class="mt-3">Sélection soignée</h6>
+        <p class="small text-muted">Des produits choisis pour leur qualité.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <i class="bi bi-shield-lock fs-2" style="color:#c8a13a;"></i>
+        <h6 class="mt-3">Transactions tracées</h6>
+        <p class="small text-muted">Chaque commande possède sa référence et son historique.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <i class="bi bi-chat-dots fs-2" style="color:#c8a13a;"></i>
+        <h6 class="mt-3">Échange direct</h6>
+        <p class="small text-muted">Un message, une réponse, un suivi clair.</p>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'catalog' %}" class="btn btn-kalos">Découvrir la boutique</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'boutique/base.html' %}
+{% block title %}Livraison — {{ kalos_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="section-title h3 mb-4"><i class="bi bi-truck me-2"></i>Informations de livraison</h1>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="summary-box p-4">
+        <form method="post">
+          {% csrf_token %}
+          <div class="row g-3">
+            {% for field in form %}
+              <div class="{% if field.name == 'full_name' or field.name == 'email' or field.name == 'address' %}col-12{% else %}col-md-6{% endif %}">
+                <label for="{{ field.id_for_label }}" class="form-label small fw-semibold">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <a href="{% url 'cart' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Retour au panier</a>
+            <button type="submit" class="btn btn-kalos flex-grow-1"><i class="bi bi-arrow-right me-1"></i>Continuer vers le paiement</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="summary-box p-4">
+        <h5 class="mb-3">Votre commande</h5>
+        {% for item in items %}
+          <div class="d-flex justify-content-between small mb-2">
+            <span>{{ item.quantity }} × {{ item.product.name }}</span>
+            <span>{{ item.line_total }} {{ kalos_currency }}</span>
+          </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between small mb-2"><span>Sous-total</span><span>{{ totals.subtotal }} {{ kalos_currency }}</span></div>
+        {% if totals.discount > 0 %}
+          <div class="d-flex justify-content-between small mb-2 text-success"><span>Réduction</span><span>-{{ totals.discount }} {{ kalos_currency }}</span></div>
+        {% endif %}
+        <div class="d-flex justify-content-between small mb-2"><span>Livraison</span><span>{{ totals.shipping }} {{ kalos_currency }}</span></div>
+        <div class="d-flex justify-content-between h5 mt-3"><span>Total</span><span>{{ totals.total }} {{ kalos_currency }}</span></div>
+        <p class="small text-muted mt-3 mb-0"><i class="bi bi-lock me-1"></i>Vos données restent sur ce site et ne sont jamais transmises à un tiers.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
